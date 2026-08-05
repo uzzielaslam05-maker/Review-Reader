@@ -29,22 +29,24 @@ object (see the deployment steps for the exact line to add).
 import re
 import string
 import json
+import os
 
 import numpy as np
 from flask import Flask, request, jsonify, render_template_string
 from ai_edge_litert.interpreter import Interpreter
 
 MAX_LEN = 120
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 print("Loading tokenizer...")
-with open("tokenizer.json") as f:
+with open(os.path.join(BASE_DIR, "tokenizer.json")) as f:
     _tok = json.load(f)
 WORD_INDEX = _tok["word_index"]
 NUM_WORDS = _tok["num_words"]
 OOV_INDEX = WORD_INDEX[_tok["oov_token"]]
 
 print("Loading TFLite model...")
-interpreter = Interpreter(model_path="imdb_sentiment.tflite")
+interpreter = Interpreter(model_path=os.path.join(BASE_DIR, "imdb_sentiment.tflite"))
 interpreter.allocate_tensors()
 INPUT_DETAILS = interpreter.get_input_details()
 OUTPUT_DETAILS = interpreter.get_output_details()
